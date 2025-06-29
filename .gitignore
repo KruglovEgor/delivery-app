@@ -75,7 +75,7 @@ obj/
 *.log
 
 # Entity Framework Migrations
-**/Migrations/2*
+**/Migrations/*
 
 
 # Database

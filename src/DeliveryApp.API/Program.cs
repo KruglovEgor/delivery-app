@@ -56,7 +56,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// app.UseHttpsRedirection(); // Отключаем HTTPS редирект для локальной разработки
 
 // Добавляем CORS перед другими middleware
 app.UseCors();
