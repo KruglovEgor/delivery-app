@@ -33,13 +33,17 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Ensure database is created and migrations are applied
+
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<DeliveryDbContext>();
     try
     {
-        context.Database.Migrate();
+        context.Database.EnsureCreated();
+        if (context.Database.GetPendingMigrations().Any())
+        {
+            context.Database.Migrate();
+        }
     }
     catch (Exception ex)
     {
@@ -79,7 +83,7 @@ app.Use(async (context, next) =>
     }
 });
 
-// Добавляем простой эндпоинт для проверки здоровья
+// Добавляем эндпоинт для проверки здоровья
 app.MapGet("/health", () => "OK");
 
 app.Run();
