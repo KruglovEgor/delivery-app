@@ -1,0 +1,31 @@
+services:
+  # Backend API
+  api:
+    build:
+      context: ./src
+      dockerfile: DeliveryApp.API/Dockerfile
+    ports:
+      - "5131:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+  # Frontend React
+  client:
+    build:
+      context: ./src/client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    restart: unless-stopped
+    environment:
+      - REACT_APP_API_URL=http://localhost:5131
+
+networks:
+  default:
+    name: delivery-app-network 
