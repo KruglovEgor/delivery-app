@@ -74,8 +74,8 @@ obj/
 *.pdb
 *.log
 
-# Entity Framework Migrations
-**/Migrations/*
+# Entity Framework Migrations (keep the folder, ignore only temporary files)
+# **/Migrations/*
 
 
 # Database
