@@ -37,19 +37,43 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<DeliveryDbContext>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    
     try
     {
-        context.Database.EnsureCreated();
+        // Проверяем, есть ли миграции для применения
         if (context.Database.GetPendingMigrations().Any())
         {
+            logger.LogInformation("Applying pending migrations...");
             context.Database.Migrate();
+            logger.LogInformation("Migrations applied successfully");
         }
+        else
+        {
+            logger.LogInformation("No pending migrations found");
+        }
+        
+        // Проверяем, что база данных доступна
+        var canConnect = await context.Database.CanConnectAsync();
+        if (!canConnect)
+        {
+            throw new Exception("Cannot connect to database");
+        }
+        
+        logger.LogInformation("Database connection verified successfully");
     }
     catch (Exception ex)
     {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "An error occurred while initializing the database");
-        throw;
+        
+        // В режиме разработки выводим подробную информацию об ошибке
+        if (app.Environment.IsDevelopment())
+        {
+            throw;
+        }
+        
+        // В продакшене можно продолжить работу или завершить приложение
+        // throw;
     }
 }
 
